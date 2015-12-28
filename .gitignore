@@ -12,4 +12,3 @@ lib/photish/assets/output
 
 # Added these to not force others to use them.
 .overcommit.yml
-.rvmrc
