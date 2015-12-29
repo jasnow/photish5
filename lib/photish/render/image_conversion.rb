@@ -3,12 +3,13 @@ module Photish
     class ImageConversion
       include Log::Loggable
 
-      def initialize(config)
+      def initialize(config, version_hash)
         @config = config
+        @version_hash = version_hash
       end
 
       def render(images)
-        log.info "Rendering #{images.count} images across #{threads} threads"
+        log.debug "Rendering #{images.count} images across #{threads} threads"
 
         cache.preload
         threads = spawn_thread_instances(to_queue(images))
@@ -18,11 +19,11 @@ module Photish
 
       private
 
-      attr_reader :config
+      attr_reader :config,
+                  :version_hash
 
       delegate :output_dir,
                :worker_index,
-               :version_hash,
                :threads,
                :soft_failure,
                to: :config
@@ -72,7 +73,7 @@ module Photish
           convert << image.path
           convert.merge!(image.quality_params)
           convert << output_path(image)
-          log.info "Performing image conversion #{convert.command}"
+          log.debug "Performing image conversion #{convert.command}"
         end
       rescue MiniMagick::Error => e
         log.warn "Error occured while converting"
